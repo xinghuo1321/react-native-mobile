@@ -6,36 +6,46 @@
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, Text, View} from 'react-native';
+import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view';
+import Order from './makeMoneyPage/Order'
 
 type Props = {};
 export default class makeMoney extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
+        <Text style={styles.titleStyle}>
+          赚佣金
+        </Text>
+        <ScrollableTabView initialPage={0}
+          renderTabBar={() => <DefaultTabBar />}
+          tabBarActiveTextColor='red'
+          tabBarUnderlineStyle={styles.tabBarUnderline}
+          tabBarTextStyle={{ fontSize: 18 }}
+        >
+          <Order tabLabel='下单' param={this.props}></Order>
+          <Order tabLabel='调研'></Order>
+          <Order tabLabel='试玩'></Order>
+        </ScrollableTabView>
       </View>
-    );
+
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    flex: 1
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  titleStyle: {
+    fontSize: 28,
+    margin: 20,
+    color: 'black'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  tabBarUnderline: {
+    backgroundColor: '#b4282d',
+    height: 1,
+  }
 });

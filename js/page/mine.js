@@ -8,7 +8,7 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-
+import MyButton from '../commonpents/MyButton'
 type Props = {};
 export default class mine extends Component<Props> {
   render() {
@@ -16,6 +16,7 @@ export default class mine extends Component<Props> {
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome to React Native!</Text>
         <Text style={styles.instructions}>To get started, edit App.js</Text>
+        <MyButton title={"套你猴子"} onPress={()=>{console.log('taonihouzi')}} btnStyle={{borderRadius: 0}}></MyButton>
       </View>
     );
   }

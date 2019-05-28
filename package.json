@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "clean-start": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && npm cache clean --force && npm start -- --reset-cache"
   },
   "dependencies": {
     "react": "16.8.3",
     "react-native": "0.59.8",
+    "react-native-checkbox": "^2.0.0",
     "react-native-gesture-handler": "^1.2.1",
+    "react-native-scrollable-tab-view": "^0.10.0",
+    "react-native-image-picker": "^0.28.1",
     "react-navigation": "^3.11.0"
   },
   "devDependencies": {
