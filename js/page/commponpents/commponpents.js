@@ -10,12 +10,14 @@ import {
     Modal
 } from 'react-native';
 import CheckBox from 'react-native-checkbox';
-import MyButton from '../../commonpents/MyButton'
+import MyButton from '../../commonpents/MyButton';
+import UpdataImg from '../../commonpents/UpdataImg';
+import ShowImage from '../../commonpents/ShowImage';
 
 export class BussRequire extends Component<Props> {
     render() {
         return (
-            <View style={[styles.searchView,this.props.bussStyle]}>
+            <View style={[styles.searchView, this.props.bussStyle]}>
                 <Text style={styles.searchTitle}>商家要求</Text>
                 <Text style={styles.searchTxt}>●要求1</Text>
                 <Text style={styles.searchTxt}>●要求2</Text>
@@ -204,9 +206,9 @@ export class TokenCom extends Component<Props> {
                         </View>
                     </View>
                 </Modal>
-                <Text style={styles.titleTxt}>{this.props.title||'请复制淘口令在淘宝打开'}</Text>
+                <Text style={styles.titleTxt}>{this.props.title || '请复制淘口令在淘宝打开'}</Text>
                 <TouchableOpacity style={styles.searchView} onPress={this.props.onPress}>
-                    <Text style={styles.searchTitleCopy}>{this.props.copyTitle||'淘口令-点击可复制'}</Text>
+                    <Text style={styles.searchTitleCopy}>{this.props.copyTitle || '淘口令-点击可复制'}</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -239,37 +241,81 @@ export class ShopCheck extends Component<Props> {
     }
 }
 
-export class AskAll extends Component<Props> {
-
+export class ImgCom extends Component<props>{
     render() {
         return (
-            <View>
-                <View style={styles.askView}>
-                    <Text>请打开目标商品的</Text>
-                    <Text style={styles.askTxt}>【问大家】</Text>
-                    <Text>,提问指定问题:</Text>
+            <View style={this.props.viewStyle}>
+                <View style={styles.collectShopView}>
+                    <Text>{this.props.title}</Text>
                 </View>
-                <Text style={styles.askTxt}>鞋子偏大还是偏小?</Text>
-                <Text>并截图上传</Text>
-                <Text style={{ color: 'red' }}>如何【问大家】?</Text>
+                <View style={styles.collectImpView}>
+                    <UpdataImg
+                        avatarSource={this.props.avatarSource}
+                        dataBase={this.props.dataBase}
+                        onPress={(avatarSource, dataBase) => { this.props.onPress(avatarSource, dataBase) }}
+                    />
+                    <View style={styles.expView}>
+                        <ShowImage src='https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg' />
+                    </View>
+                </View>
             </View>
         )
     }
 }
 
+export class ClickArrow extends Component<props>{
+    render() {
+        return (
+            <TouchableOpacity style={styles.termView} onPress={this.props.onPress}>
+                <View>
+                    <Text style={styles.termTxt}>{this.props.title}</Text>
+                </View>
+                <View>
+                    <Image
+                        style={styles.ArrowImg}
+                        source={require('../../../image/15.png')}
+                    />
+                </View>
+            </TouchableOpacity>
+        )
+    }
+}
+
 const styles = StyleSheet.create({
-    //问大家view
-    askView:{
-        flexDirection: 'row', 
-        marginTop: 10
+    //箭头图片
+    ArrowImg: {
+        width: 15,
+        height: 26
     },
-    //问大家txt
-    askTxt:{
-        color: 'black'
+    //每项的txt
+    termTxt: {
+        fontSize: 18,
+        color: '#000000'
     },
-    //如何问大家txt
-    howAskTxt:{
-        color: 'red'
+    //每项行view
+    termView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        //左右边距
+        paddingHorizontal: 20,
+        //上下边距
+        paddingVertical: 15
+    },
+    //收藏图片view
+    collectImpView: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginLeft: 10
+    },
+    //收藏商品View
+    collectShopView: {
+        marginTop: 15,
+        marginLeft: 10
+    },
+    //示例图view
+    expView: {
+        marginLeft: 10,
+        marginBottom: 20
     },
     //店铺和输入框view
     shopView: {
@@ -405,7 +451,7 @@ const styles = StyleSheet.create({
     //弹框view
     frameView: {
         width: 240,
-        height: 120,
+        height: 140,
         justifyContent: 'center',
         borderRadius: 10,
         backgroundColor: 'white'

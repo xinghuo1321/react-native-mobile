@@ -36,7 +36,9 @@ export default class BindPhone extends Component<Props> {
         return (
             <View style={styles.container}>
                 <View>
-                    <MyPhone />
+                    <MyPhone 
+                        phoneInputStyle={{marginLeft: 0 }}
+                    />
                     <MyCode />
                 </View>
                 <View>

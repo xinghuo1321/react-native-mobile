@@ -4,20 +4,19 @@ import {
     StyleSheet,
     Text,
     View,
-    Image,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-    TouchableOpacity
+    ScrollView,
 } from 'react-native';
 import { InputCom } from './commponpents'
 import MyButton from '../../commonpents/MyButton';
+import UpdataImg from '../../commonpents/UpdataImg';
 
 export default class Evaluate extends Component<Props> {
     constructor(Props) {
         super(Props);
         this.state = {
-            isShow: false
+            isShow: false,
+            dataBase: '',
+            avatarSource: '',
         }
     }
     toSubmit = () => {
@@ -25,6 +24,14 @@ export default class Evaluate extends Component<Props> {
             isShow: !this.state.isShow
         })
     }
+
+    getDataBase (avatarSource,dataBase){
+        this.setState({
+            avatarSource,
+            dataBase
+        });
+    }
+
     render() {
         return (
             <ScrollView style={styles.contain}>
@@ -44,6 +51,23 @@ export default class Evaluate extends Component<Props> {
 
                     <Text style={styles.titleTxt}>请拍照上传</Text>
                     <Text>就收到的免费商品拍照3张上传</Text>
+                    <View style={styles.imgView}>
+                        <UpdataImg 
+                            avatarSource={this.state.avatarSource} 
+                            dataBase={this.state.dataBase} 
+                            onPress={(avatarSource,dataBase)=>{this.getDataBase(avatarSource,dataBase)}}
+                        />
+                        <UpdataImg 
+                            avatarSource={this.state.avatarSource} 
+                            dataBase={this.state.dataBase} 
+                            onPress={(avatarSource,dataBase)=>{this.getDataBase(avatarSource,dataBase)}}
+                        />
+                        <UpdataImg 
+                            avatarSource={this.state.avatarSource} 
+                            dataBase={this.state.dataBase} 
+                            onPress={(avatarSource,dataBase)=>{this.getDataBase(avatarSource,dataBase)}}
+                        />
+                    </View>
                     <View style={styles.btnView}>
                         <MyButton
                             onPress={this.toSubmit}
@@ -94,4 +118,10 @@ const styles = StyleSheet.create({
         height: 40,
         width: 140
     },
+    //图片view
+    imgView: {
+        flexDirection:'row',
+        justifyContent:'space-between',
+        marginTop:20
+    }
 })

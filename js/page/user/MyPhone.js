@@ -5,9 +5,14 @@ export default class MyPhone extends Component {
 
     render() {
         return (
-            <View style={{marginLeft:20,marginTop:20}}>
-                <Text style={styles.welcome}>{this.props.title||'手机号'}</Text>
-                <TextInput style={styles.phoneInput} placeholder={this.props.placehold||'请输入手机号'} />
+            <View style={[styles.containView, this.props.containView]}>
+                <Text style={styles.welcome}>{this.props.title || '手机号'}</Text>
+                <TextInput
+                    style={[styles.phoneInput, this.props.phoneInputStyle]}
+                    placeholder={this.props.placehold || '请输入手机号'}
+                    onChangeText={(text) => { this.props.onChangeText(text) }}
+                    value={this.props.value}
+                />
             </View>
         )
     }
@@ -18,12 +23,17 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
 
+    containView: {
+        marginLeft: 20,
+        marginTop: 20
+    },
     //输入框
     phoneInput: {
         borderColor: '#F0F0F0',
-        marginTop:20,
+        marginTop: 20,
         marginLeft: 20,
-        marginRight: 20
+        marginRight: 20,
+        paddingLeft: 20
     },
 
 })

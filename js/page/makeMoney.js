@@ -26,8 +26,8 @@ export default class makeMoney extends Component<Props> {
           tabBarTextStyle={{ fontSize: 18 }}
         >
           <Order tabLabel='下单' param={this.props}></Order>
-          <Order tabLabel='调研'></Order>
-          <Order tabLabel='试玩'></Order>
+          <Text tabLabel='调研'></Text>
+          <Text tabLabel='试玩'></Text>
         </ScrollableTabView>
       </View>
 

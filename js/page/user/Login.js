@@ -7,10 +7,14 @@
  */
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Image ,TouchableOpacity} from 'react-native';
+import { Platform, StyleSheet, Text, View, Image, TouchableOpacity, DeviceEventEmitter } from 'react-native';
+import { NavigationActions, StackActions } from 'react-navigation';
 import MyButton from '../../commonpents/MyButton';
 import MyPhone from '../user/MyPhone';
 import MyCode from '../user/MyCode';
+import DataStore from '../../expand/dao/DataStore';
+import { Frame } from '../commponpents/commponpents';
+import fetchAjax from '../../../fetch/fetch';
 
 
 const BtnColor = Platform.select({
@@ -19,6 +23,42 @@ const BtnColor = Platform.select({
 })
 type Props = {};
 export default class Login extends Component<Props> {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            phoneText: '',
+            phoneCode: '',
+            btnTxt: '',
+            frameVisible: false,
+            msg: ''
+        }
+        // this.dataStore = new DataStore();
+        //我的首页监听返回
+        this.isBack = true;
+        //个人信息监听返回
+        this.isBackCom = true;
+    }
+
+    componentDidMount() {
+        let obj = this.props.navigation.state.params;
+        if (obj && obj.backPage === 'MyIndex') {
+            this.isBackCom = false
+        }
+        if (obj && obj.backPage === 'MyInfo') {
+            this.isBack = false
+        }
+    }
+
+    // componentWillMount(){
+    //     DeviceEventEmitter.emit("LoginBack", {});
+    // }
+
+    closeFrame = () => {
+        this.setState({
+            frameVisible: !this.state.frameVisible
+        })
+    }
 
     toRegister = () => {
         const { navigation } = this.props;
@@ -36,20 +76,159 @@ export default class Login extends Component<Props> {
 
     }
 
+    //获取验证码
+    getCode = () => {
+        if (this.state.btnTxt !== '') return;
+
+        fetchAjax({
+            url: '/m/sendVcode',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            data: {
+                phone: this.state.phoneText,
+                vcode: '6554'
+            }
+        }).then((data) => {
+            if (data.status == 200) {
+                if (data.josn.meta.success) {
+                    let i = 60;
+                    this.setState({
+                        btnTxt: i.toString(),
+                    });
+
+                    this._timer = setInterval(() => {
+                        i--;
+                        if (this.state.btnTxt > 0) {
+                            this.setState({
+                                btnTxt: i.toString(),
+                            });
+                        } else {
+                            this._timer && clearInterval(this._timer);
+                            this.setState({
+                                btnTxt: '',
+                            });
+                        }
+                    }, 1000);
+                }
+            } else {
+                this.setState({
+                    msg: data.message,
+                    frameVisible: true
+                })
+            }
+
+        }).catch((err) => {
+
+        });
+
+    }
+
+    toLogin = () => {
+
+        fetchAjax({
+            url: '/m/app/auth/v2',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            data: {
+                phone: this.state.phoneText,
+                vcode: this.state.phoneCode,
+            }
+        }).then((data) => {
+            if (data.status === 200) {
+                if (data.josn.meta.success) {
+                    this.isBack = false;
+                    this.isBackCom = false;
+                    DataStore.setAuthToken(data.josn.data);
+                    // this.props.navigation.goBack();
+                    let resetActiom = StackActions.reset({
+                        index: 0,//默认打开actions中的第几个页面
+                        actions: [//actions是页面集合
+                            //NavigationActions.navigate({ routeName: 'One' }),
+                            NavigationActions.navigate({
+                                routeName: 'Bottom',
+                                //子页面
+                                action: NavigationActions.navigate({
+                                    routeName: 'MyIndex'
+                                })
+                            }),
+                        ]
+                    })
+                    this.props.navigation.dispatch(resetActiom)
+                }
+            } else if (data.status === 409) {
+                if (data.josn.message === '用户未注册') {
+                    this.props.navigation.navigate('Register', {
+                        phone: this.state.phoneText
+                    });
+                } else {
+                    this.setState({
+                        msg: data.josn.message,
+                        frameVisible: true
+                    })
+                }
+            } else {
+                this.setState({
+                    msg: data.josn.meta.message,
+                    frameVisible: true
+                })
+            }
+        }).catch((err) => {
+
+        });
+    }
+
+    phoneChangeTxt = (text) => {
+        this.setState({
+            phoneText: text
+        })
+    }
+    phoneChangeCode = (text) => {
+        this.setState({
+            phoneCode: text
+        })
+    }
+
+    componentWillUnmount() {
+        if (this.isBack) {
+            DeviceEventEmitter.emit("LoginBack", {});
+        }
+        if (this.isBackCom) {
+            DeviceEventEmitter.emit("LoginBackCom", {});
+        }
+        this._timer && clearInterval(this._timer);
+    }
+
     render() {
 
         return (
             <View style={styles.container}>
+                <Frame
+                    frameVisible={this.state.frameVisible}
+                    closeFrame={this.closeFrame}
+                    msgBtn={'知道了'}
+                    msg={this.state.msg}
+                />
                 <View>
-                    <MyPhone />
-                    <MyCode />
+                    <MyPhone
+                        phoneInputStyle={{ marginLeft: 0 }}
+                        onChangeText={(text) => this.phoneChangeTxt(text)}
+                    />
+                    <MyCode
+                        onPress={this.getCode}
+                        btnTxt={this.state.btnTxt.toString()}
+                        onChangeText={(text) => this.phoneChangeCode(text)}
+                    />
                 </View>
                 <View>
                     <View style={styles.loginBut}>
                         <View style={styles.loginRegBut}>
                             <MyButton
                                 title="登陆/注册"
-                                onPress={this.toRegister}
+                                onPress={this.toLogin}
                                 btnStyle={{ backgroundColor: 'red', height: 40, width: 200 }}
                             />
                         </View>

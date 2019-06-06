@@ -21,12 +21,26 @@ import MyIndex from '../js/page/MyPage/MyIndex';
 import MyInfo from '../js/page/MyPage/MyInfo';
 import RefundsInfo from '../js/page/MyPage/RefundsInfo';
 import MyTask from '../js/page/MyPage/MyTask';
+import BankList from '../js/page/MyPage/BankList';
+import CashOutAccount from '../js/page/MyPage/CashOutAccount';
+import CashOutPass from '../js/page/MyPage/CashOutPass';
+import PhoneSet from '../js/page/MyPage/PhoneSet';
+import LoginPassSet from '../js/page/MyPage/LoginPassSet';
+import TaoBao from '../js/page/MyPage/TaoBao';
+import CustomerService from '../js/page/MyPage/CustomerService';
+import HelpInfo from '../js/page/MyPage/HelpInfo';
+import TaoBaoOper from '../js/page/MyPage/TaoBaoOper';
+import VideoOper from '../js/page/MyPage/VideoOper';
+import DataStore from '../js/expand/dao/DataStore'
 
+import AllDetails from '../js/page/tryOutPage/AllDetails';
+import Invitation from '../js/page/MyPage/invitation/invitation'
+import Information from '../js/page/MyPage/information'
+import bringMoney from "../js/page/MyPage/mywallet/bringMoney";
 import wallet from "../js/page/MyPage/mywallet/wallet";
 import search from '../js/page/tryOutPage/search'
 import all from '../js/page/tryOutPage/all'
 import scrollDetails from '../js/page/tryOutPage/scrollDetails'
-
 import { Button, Image, View, TouchableOpacity } from "react-native"
 
 const AppBottomNavigator = createBottomTabNavigator({
@@ -39,7 +53,12 @@ const AppBottomNavigator = createBottomTabNavigator({
                 return <Image
                     style={{ height: 25, width: 25 }}
                     source={icon} />
-            }
+            },
+            tabBarOnPress: (event) => {
+                event.defaultHandler();//调用组建内默认的实现方法
+                // let dataStore = new DataStore();
+                DataStore.saveDataKey("bottom", "recommend");
+            },
         }
     },
     makeMoney: {
@@ -51,7 +70,12 @@ const AppBottomNavigator = createBottomTabNavigator({
                 return <Image
                     style={{ height: 25, width: 25 }}
                     source={icon} />
-            }
+            },
+            tabBarOnPress: (event) => {
+                event.defaultHandler();//调用组建内默认的实现方法
+                // let dataStore = new DataStore();
+                DataStore.saveDataKey("bottom", "makeMoney");
+            },
         }
     },
     tryOut: {
@@ -63,7 +87,12 @@ const AppBottomNavigator = createBottomTabNavigator({
                 return <Image
                     style={{ height: 25, width: 25 }}
                     source={icon} />
-            }
+            },
+            tabBarOnPress: (event) => {
+                event.defaultHandler();//调用组建内默认的实现方法
+                // let dataStore = new DataStore();
+                DataStore.saveDataKey("bottom", "tryOut");
+            },
         }
     },
     MyIndex: {
@@ -108,6 +137,9 @@ export const AppStackNavigator = new createStackNavigator({
     },
     tryOut: {
         screen: tryOut
+    },
+    AllDetails: {
+        screen: AllDetails
     },
     Register: {
         screen: Register,
@@ -163,6 +195,17 @@ export const AppStackNavigator = new createStackNavigator({
         screen: SearchTryout,
         navigationOptions: ({ }) => ({
             headerTitle: '申请试用',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    Information: {
+        screen: Information,
+        navigationOptions: ({ }) => ({
+            headerTitle: '个人信息',
             headerTitleStyle: {
                 flex: 1,
                 textAlign: 'center',
@@ -269,6 +312,29 @@ export const AppStackNavigator = new createStackNavigator({
             headerRight: (<View />)
         })
     },
+
+    Invitation: {
+        screen: Invitation,
+        navigationOptions: ({})=>({
+            headerTitle: '我的邀请',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    BringMoney: {
+        screen: bringMoney,
+        navigationOptions: ({})=>({
+            headerTitle: '提现',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
     Wallet: {
         screen: wallet,
         navigationOptions: ({ }) => ({
@@ -311,6 +377,132 @@ export const AppStackNavigator = new createStackNavigator({
             ),
             
         })
+    },
+    BankList: {
+        screen: BankList,
+        navigationOptions: ({ }) => ({
+            headerTitle: '选择开户行',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    CashOutAccount: {
+        screen: CashOutAccount,
+        navigationOptions: ({ }) => ({
+            headerTitle: '提现账号',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    CashOutPass: {
+        screen: CashOutPass,
+        navigationOptions: ({ }) => ({
+            headerTitle: '提现密码',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    PhoneSet: {
+        screen: PhoneSet,
+        navigationOptions: ({ }) => ({
+            headerTitle: '提现账号',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    LoginPassSet: {
+        screen: LoginPassSet,
+        navigationOptions: ({ }) => ({
+            headerTitle: '登陆密码',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    TaoBao: {
+        screen: TaoBao,
+        navigationOptions: ({ }) => ({
+            headerTitle: '淘宝号',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    Login: {
+        screen: Login,
+        navigationOptions: ({ }) => ({
+            headerTitle: '登陆/注册',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    HelpInfo: {
+        screen: HelpInfo,
+        navigationOptions: ({ }) => ({
+            headerTitle: '帮助',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    CustomerService: {
+        screen: CustomerService,
+        navigationOptions: ({ }) => ({
+            headerTitle: '联系客服',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    TaoBaoOper: {
+        screen: TaoBaoOper,
+        navigationOptions: ({ }) => ({
+            headerTitle: '淘宝操作指引',
+            headerTitleStyle: {
+                flex: 1,
+                textAlign: 'center',
+            },
+            headerRight: (<View />)
+        })
+    },
+    VideoOper: {
+        screen: VideoOper,
+        navigationOptions: (navigation) => {
+            console.log(navigation)
+            return (
+                {
+                    headerTitle: navigation.navigation.state.params.title,
+                    headerTitleStyle: {
+                        flex: 1,
+                        textAlign: 'center',
+                    },
+                    headerRight: (<View />)
+                }
+            )
+        }
     },
     Bottom: {
         screen: AppBottomNavigator,

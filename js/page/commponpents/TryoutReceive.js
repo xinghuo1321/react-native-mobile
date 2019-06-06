@@ -8,12 +8,10 @@ import {
     Clipboard,
     Image
 } from 'react-native';
-import { SearchToken, Frame, InputCom, BussRequire, ShopCheck, AskAll } from './commponpents'
+import { SearchToken, Frame, InputCom, BussRequire, ShopCheck, ImgCom } from './commponpents'
 import MyButton from '../../commonpents/MyButton';
-// import SearchToken from './SearchToken';
-// import Frame from './Frame';
-// import InputCom from './InputCom';
-// import BussRequire from './BussRequire';
+import ShowImage from '../../commonpents/ShowImage';
+import UpdataImg from '../../commonpents/UpdataImg';
 
 export default class TryoutReceive extends Component<Props> {
 
@@ -23,6 +21,8 @@ export default class TryoutReceive extends Component<Props> {
             frameVisible: false,
             copyVisible: false,
             copyText: '我是文本',
+            dataBase: '',
+            avatarSource: '',
         }
     }
     toSubmit = () => {
@@ -34,6 +34,13 @@ export default class TryoutReceive extends Component<Props> {
         this.setState({
             frameVisible: !this.state.frameVisible
         })
+    }
+
+    getDataBase(avatarSource, dataBase) {
+        this.setState({
+            avatarSource,
+            dataBase
+        });
     }
 
     //复制文本
@@ -109,8 +116,39 @@ export default class TryoutReceive extends Component<Props> {
 
                     <Text style={styles.titleTxt}>请上传相关截图</Text>
 
+                    <ImgCom
+                        viewStyle={{ backgroundColor: '#f3f3f3' }}
+                        title={'收藏商品'}
+                        avatarSource={this.state.avatarSource}
+                        dataBase={this.state.dataBase}
+                        onPress={(avatarSource, dataBase) => { this.getDataBase(avatarSource, dataBase) }}
+                    />
+
+                    <ImgCom
+                        viewStyle={{ backgroundColor: 'white' }}
+                        title={'关注店铺'}
+                        avatarSource={this.state.avatarSource}
+                        dataBase={this.state.dataBase}
+                        onPress={(avatarSource, dataBase) => { this.getDataBase(avatarSource, dataBase) }}
+                    />
+
                     <Text style={styles.titleTxt}>问大家</Text>
-                    <AskAll />
+                    <View>
+                        <View style={styles.askView}>
+                            <Text>请打开目标商品的</Text>
+                            <Text style={styles.askTxt}>【问大家】</Text>
+                            <Text>,提问指定问题:</Text>
+                        </View>
+                        <Text style={styles.askTxt}>鞋子偏大还是偏小?</Text>
+                        <ImgCom
+                            viewStyle={{ backgroundColor: '#f3f3f3' }}
+                            title={'并上传截图'}
+                            avatarSource={this.state.avatarSource}
+                            dataBase={this.state.dataBase}
+                            onPress={(avatarSource, dataBase) => { this.getDataBase(avatarSource, dataBase) }}
+                        />
+                        <Text style={styles.howAskTxt}>如何【问大家】?</Text>
+                    </View>
 
                     <Text style={styles.titleTxt}>下单垫付货款</Text>
 
@@ -122,6 +160,13 @@ export default class TryoutReceive extends Component<Props> {
                         multiline={true}
                         inputStyle={styles.inputStyle}
                         numberOfLines={1}
+                    />
+                    <ImgCom
+                        viewStyle={{ backgroundColor: 'white' }}
+                        title={'订单页面(需显示"买家已付款")'}
+                        avatarSource={this.state.avatarSource}
+                        dataBase={this.state.dataBase}
+                        onPress={(avatarSource, dataBase) => { this.getDataBase(avatarSource, dataBase) }}
                     />
                     <View style={styles.btnView}>
                         <MyButton
@@ -145,6 +190,19 @@ const styles = StyleSheet.create({
         padding: 20,
     },
 
+    //问大家view
+    askView: {
+        flexDirection: 'row',
+        marginTop: 10
+    },
+    //问大家txt
+    askTxt: {
+        color: 'black'
+    },
+    //如何问大家txt
+    howAskTxt: {
+        color: 'red'
+    },
     //标题txt
     titleTxt: {
         marginTop: 5,
@@ -165,7 +223,8 @@ const styles = StyleSheet.create({
     //输入框样式
     inputStyle: {
         height: 50,
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
+        backgroundColor:'#f3f3f3'
     },
     //搜索view
     searchView: {
@@ -184,4 +243,20 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginBottom: 10
     },
+    //收藏图片view
+    collectImpView: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginLeft: 10
+    },
+    //收藏商品View
+    collectShopView: {
+        marginTop: 15,
+        marginLeft: 10
+    },
+    //示例图view
+    expView: {
+        marginLeft: 10,
+        marginBottom: 20
+    }
 });

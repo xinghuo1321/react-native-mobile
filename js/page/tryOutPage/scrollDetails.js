@@ -1,66 +1,107 @@
 import React, { Component } from 'react';
 import FasterListDeom from '../../commonpents/FasterListDeom'
 import { Dimensions, StyleSheet, Text, View, ScrollView } from 'react-native';
+import axios from '../../../fetch/fetch'
 
 type Props = {};
 export default class scrollDetails extends Component<Props> {
-    constructor(props){
-        super(props)
-        this.state = {
-          isLoading: false,
-          off: false,
-          data: [{img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了你信么不管你信不信反正我是信了',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了字你信么不管你信不信',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666}]
-        }
-      }
-      reLoading= () =>{
-        console.log(1)
-        this.setState({
-          isLoading: true
-        })
-        let arr = []
-        setTimeout(() => {
-          arr = [{img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666},
-          {img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666}]
-          this.setState({
-            data: [...arr],
-            isLoading: false
-          })
-        }, 2000);
-    
-      }
-    
-      headerView = () =>{
-        return <Hearder prop={this.props}/>
-      }
-      footerReLoading = ()=>{
-        console.log(1)
-        if(!this.state.off){
-          let arr = [];
-        setTimeout(()=>{
-          arr.push({img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666})
-          arr.push({img:'https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg',num:6,txt:'这只是简单的一行文字你信么不管你信不信反正我是信了',money: 666})
-          this.setState({
-              data: [...this.state.data,...arr],
-              off: true
-            })
-          },2000)
-        }
-        
-      }
+  constructor(props) {
+    super(props)
+    this.state = {
+      isLoading: false,
+      off: false,
+      data: []
+    }
+    this.goodsId = "";
+    this.page = 0;
+    this.size = 10;
+    this.total = 0;
+  }
 
-     render (){
-         return (
-            <FasterListDeom
-            array={this.state.data}
-            isLoading={this.state.isLoading}
-            reLoading={this.reLoading}
-            onEndReached={this.footerReLoading}
-            footerOff={this.state.off}></FasterListDeom>
-         )
-     }
+  static navigationOptions = (navigation, screenProps) =>({
+    
+    // headerTitle instead of title
+    headerTitle: <Text>{navigation.navigation.getParam('title')}</Text>
+  })
+  reLoading = () => {
+    this.setState({
+      isLoading: true
+    })
+    axios({ url: '/m/goods-info/list', params: { search: this.goodsId, page: 0, size: this.size } }).then((res) => {
+      console.log(res)
+      this.setState({
+        data: [...res.josn.content],
+        isLoading: false
+      },
+      ()=>{console.log(this.state.arr)})
+      this.page = 1;
+      this.total = res.josn.totalPages
+      if(this.page>this.total){
+        this.setState({
+          off: true
+        })
+      }else{
+        this.setState({
+          off: false
+        })
+      }
+    }).catch((err) => {
+      alert('发生了一个预期之外的错误')
+    });
+
+  }
+
+  headerView = () => {
+    return <Hearder prop={this.props} />
+  }
+  footerReLoading = () => {
+    if (!this.state.off) {
+      axios({ url: '/m/goods-info/list', params: { search: this.goodsId, page: this.page, size: this.size } }).then((res) => {
+        console.log(res)
+        let arr = [...this.state.data,...res.josn.content]
+        this.setState({
+          data:arr
+        })
+        this.page++;
+        this.total = res.josn.totalPages
+        if(this.page>this.total){
+          this.setState({
+            off: true
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+        alert('发生了一个预期之外的错误')
+      });
+    }
+
+  }
+  componentDidMount() {
+    this.goodsId = this.props.navigation.getParam('goodsId')
+    axios({ url: '/m/goods-info/list', params: { search: this.goodsId, page: this.page, size: this.size } }).then((res) => {
+      console.log(res)
+      this.setState({
+        data: [...res.josn.content]
+      })
+      this.page++;
+      this.total = res.josn.totalPages
+      if(this.total === 0){
+        this.setState({
+          off: true
+        })
+      }
+    }).catch((err) => {
+      alert('发生了一个预期之外的错误')
+    });
+  }
+  render() {
+    return (
+      <FasterListDeom
+        array={this.state.data}
+        isLoading={this.state.isLoading}
+        reLoading={this.reLoading}
+        onEndReached={this.footerReLoading}
+        footerOff={this.state.off}></FasterListDeom>
+    )
+  }
 }

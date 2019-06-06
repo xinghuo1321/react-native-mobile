@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     },
     inp: {
         flex: 3,
+        padding: 0,
         backgroundColor: '#fff',
         borderRadius: 15
     }

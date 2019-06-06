@@ -8,9 +8,13 @@
 
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { NavigationActions, StackActions } from 'react-navigation';
 import MyButton from '../../commonpents/MyButton'
 import MyPhone from '../user/MyPhone';
 import MyPass from '../user/MyPass';
+import DataStore from '../../expand/dao/DataStore';
+import { Frame } from '../commponpents/commponpents';
+import fetchAjax from '../../../fetch/fetch';
 
 const BtnColor = Platform.select({
     ios: { color: 'red' },
@@ -22,9 +26,20 @@ export default class PassLogin extends Component<Props> {
     constructor(props) {
         super(props);
         this.state = {
+            phoneText: '',
+            passTxt: '',
             securePassEntry: true,
             passUrl: require('../../../image/2.png'),
+            frameVisible: false,
+            msg: ''
         }
+        // this.dataStore = new DataStore();
+    }
+
+    closeFrame = () => {
+        this.setState({
+            frameVisible: !this.state.frameVisible
+        })
     }
 
     toForgetPass = () => {
@@ -52,16 +67,88 @@ export default class PassLogin extends Component<Props> {
         }
     }
 
+    phoneChangeTxt = (text) => {
+        this.setState({
+            phoneText: text
+        })
+    }
+    phoneChangePass = (text) => {
+        this.setState({
+            passTxt: text
+        })
+    }
+
+    toLogin = () => {
+
+        fetchAjax({
+            url: '/m/app/auth/v1',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            data: {
+                username: this.state.phoneText,
+                password: this.state.passTxt,
+            }
+        }).then((result) => {
+            if (result.status === 200) {
+                if (result.josn.meta.success) {
+                    DataStore.setAuthToken(result.josn.data);
+                    // this.props.navigation.goBack();
+                    let resetActiom = StackActions.reset({
+                        index: 0,//默认打开actions中的第几个页面
+                        actions: [//actions是页面集合
+                            //NavigationActions.navigate({ routeName: 'One' }),
+                            NavigationActions.navigate({
+                                routeName: 'Bottom',
+                                //子页面
+                                action: NavigationActions.navigate({
+                                    routeName: 'MyIndex'
+                                })
+                            }),
+                        ]
+                    })
+                    this.props.navigation.dispatch(resetActiom)
+                }
+            } else if (result.status === 409) {
+
+                this.setState({
+                    msg: result.josn.message,
+                    frameVisible: true
+                })
+
+            } else {
+                this.setState({
+                    msg: result.josn.meta.message,
+                    frameVisible: true
+                })
+            }
+
+        }).catch((err) => {
+
+        });
+    }
+
     render() {
 
         return (
             <View style={styles.container}>
+                <Frame
+                    frameVisible={this.state.frameVisible}
+                    closeFrame={this.closeFrame}
+                    msgBtn={'知道了'}
+                    msg={this.state.msg}
+                />
                 <View>
-                    <MyPhone />
+                    <MyPhone
+                        phoneInputStyle={{ marginLeft: 0 }}
+                        onChangeText={(text) => this.phoneChangeTxt(text)}
+                    />
                     <MyPass
                         secureTextEntry={this.state.securePassEntry}
                         click={this.clickEye}
                         src={this.state.passUrl}
+                        onChangeText={(text) => this.phoneChangePass(text)}
                     />
                     <View style={styles.viewMargin}>
                         <TouchableOpacity style={styles.forgetBut} onPress={this.toForgetPass}>
@@ -74,7 +161,7 @@ export default class PassLogin extends Component<Props> {
                         <View style={styles.loginRegBut}>
                             <MyButton
                                 title="登陆"
-                                //onPress={this.toRegister}
+                                onPress={this.toLogin}
                                 btnStyle={{ backgroundColor: 'red', height: 40, width: 200 }}
                             />
                         </View>

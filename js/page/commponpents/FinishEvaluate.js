@@ -4,10 +4,14 @@ import {
     StyleSheet,
     Text,
     View,
-    Clipboard
+    Clipboard,
+    ScrollView,
+    TouchableOpacity
 } from 'react-native';
 import MyButton from '../../commonpents/MyButton';
-import { TokenCom } from './commponpents'
+import { TokenCom,ImgCom } from './commponpents';
+import ShowImage from '../../commonpents/ShowImage';
+import UpdataImg from '../../commonpents/UpdataImg';
 
 export default class FinishEvaluate extends Component<Props> {
     constructor(Props) {
@@ -15,7 +19,16 @@ export default class FinishEvaluate extends Component<Props> {
         this.state = {
             copyVisible: false,
             copyText: '我是文本',
+            dataBase: '',
+            avatarSource: '',
         }
+    }
+
+    getDataBase (avatarSource,dataBase){
+        this.setState({
+            avatarSource,
+            dataBase
+        });
     }
 
     //复制文本
@@ -43,8 +56,45 @@ export default class FinishEvaluate extends Component<Props> {
                         title={'复制评价内容到购物平台评价'}
                         copyTitle={'评价文本'}
                     />
+                    <View>
+                        <TouchableOpacity style={styles.searchView} onPress={this.props.onPress}>
+                            <Text style={styles.searchTitleCopy}>评价图片（点击可一键保存图片）</Text>
+                        </TouchableOpacity>
+                        <View style={styles.exampleView}>
+                            <View style={styles.expView}>
+                                <ShowImage src='https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg'/>
+                            </View>
+                            <View style={styles.expView}>
+                                <ShowImage src='https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg'/>
+                            </View>
+                            <View style={styles.expView}>
+                                <ShowImage src='https://k.zol-img.com.cn/sjbbs/7692/a7691501_s.jpg'/>
+                            </View>
+                        </View>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.searchView} onPress={this.props.onPress}>
+                            <Text style={styles.searchTitleCopy}>评价视频（2.4M）</Text>
+                        </TouchableOpacity>
+                        <View style={styles.exampleView}>
+                            <MyButton
+                                onPress={this.toSubmit}
+                                btnStyle={[styles.btnStyle, styles.videoBtn]}
+                                title={'点击下载评价视频'}
+                            />
+                        </View>
+                    </View>
+
                     <Text style={styles.titleTxt}>回传评价截图</Text>
-                    <Text>请按示例截图上传购物平台评价截图</Text>
+
+                    <ImgCom
+                        viewStyle={{ backgroundColor: '#f3f3f3' }}
+                        title={'请按示例截图上传购物平台评价截图'}
+                        avatarSource={this.state.avatarSource}
+                        dataBase={this.state.dataBase}
+                        onPress={(avatarSource, dataBase) => { this.getDataBase(avatarSource, dataBase) }}
+                    />
+
                     <View style={styles.btnView}>
                         <MyButton
                             onPress={this.toSubmit}
@@ -83,4 +133,35 @@ const styles = StyleSheet.create({
         height: 40,
         width: 140
     },
+    //回传截图view
+    returnImgView: {
+        flexDirection: 'row',
+        marginTop: 20
+    },
+    //示例图View
+    expView: {
+        marginLeft: 10
+    },
+    //示例图View
+    exampleView: {
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        paddingVertical: 10
+    },
+    //搜索view
+    searchView: {
+        marginTop: 10,
+        backgroundColor: 'white',
+    },
+    //搜索标题
+    searchTitleCopy: {
+        marginTop: 10,
+        marginLeft: 10,
+        marginBottom: 10
+    },
+    //视频btn
+    videoBtn: {
+        width: 200,
+        marginLeft: 10
+    }
 })

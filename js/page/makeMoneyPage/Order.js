@@ -10,46 +10,93 @@ import {
     RefreshControl,
     TouchableOpacity
 } from 'react-native';
+import fetchAjax from '../../../fetch/fetch';
 
 const CITY_NAMES = [
-    { money: 1, title: 'erwtew标题1', msg: '标题1sss' },
-    { money: 2, title: 'hhhhhhtetuytuyjtd标题2', msg: '标题2sssdsfg' },
-    { money: 3, title: 'hhh标题3', msg: '标题3sss' },
-    { money: 4, title: 'hhhherrrrrrerwgtywert标题4', msg: '标题4sss' },
-    { money: 5, title: 'ewtwert标题5', msg: '标题5sssgdsfg' },
+
 ]
+
+const search = 'gtype:1';
 export default class Order extends Component<Props> {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
-            dataArray: CITY_NAMES
+            dataArray: [],
+            con: true
         }
+        this.page = 0;
+        this.size = 20;
+        this.totalPages = 0;
     }
-    
-    toGoodsDetail = () => {
+
+    componentDidMount() {
+        let data = this.loadFetch(this.page, this.size, true);
+        this.setState({
+            dataArray: data
+        })
+    }
+
+    loadFetch(page, size, isLoading) {
+        fetchAjax({
+            url: '/m/goods-info/list',
+            params: {
+                page: page,
+                size: size,
+                search: search
+            }
+        }).then((result) => {
+            if (result.status === 200) {
+                //是否请求到列表数据
+                if (result.josn.content && result.josn.content.length > 0) {
+                    let dataArrayBuffer = [];
+                    //判断是顶部刷新
+                    if (isLoading) {
+                        this.page = 0;
+                        dataArrayBuffer = result.josn.content;
+                    } else {//底部加载
+                        this.page++;
+                        dataArrayBuffer = this.state.dataArray.concat(result.josn.content);
+                    }
+                    this.totalPages = result.josn.totalPages;
+                    //关闭load并渲染数据
+                    this.setState({
+                        isLoading: false,
+                        dataArray: dataArrayBuffer
+                    })
+                }
+            }
+        }).catch((err) => {
+
+        });
+    }
+
+    toGoodsDetail = (goodsId) => {
         const { navigation } = this.props.param;
-        navigation.navigate('GoodsDetail')
+        navigation.navigate('GoodsDetail', {
+            goodsId: goodsId
+        })
 
     }
 
     _renderItem(data) {
         return (
-            <TouchableOpacity style={styles.itemView} onPress={this.toGoodsDetail}>      
+            <TouchableOpacity style={styles.itemView} onPress={() => this.toGoodsDetail(data.item.goodsId)}>
                 <View style={styles.itemTextView}>
                     <View style={styles.itemTextMoneyView}>
-                        <Text style={styles.itemTextMoneyText}>+{data.item.money}</Text>
+                        <Text style={styles.itemTextMoneyText}>+{data.item.workPrice}</Text>
                         <View style={styles.itemTextMoneyUnitView}>
                             <Text>元</Text>
                         </View>
                     </View>
-                    <Text>{data.item.title}</Text>
-                    <Text style={styles.itemTextMsgText}>{data.item.msg}</Text>
+                    <Text>{data.item.goodsName}</Text>
+                    <Text style={styles.itemTextMsgText}>支付{data.item.goodsPrice}元,返{data.item.payBack}元</Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
                     <Image
                         style={{ width: 90, height: 90, marginRight: 10 }}
                         source={require('../../../image/14.png')}
+                        source={{ uri: data.item.goodsImg }}
                     />
                 </View>
             </TouchableOpacity>
@@ -58,7 +105,6 @@ export default class Order extends Component<Props> {
 
     //上拉下拉加载
     reLoading = refreshing => {
-        console.log(1);
         //判断是否顶部刷新
         if (refreshing) {
             //打开load
@@ -67,39 +113,25 @@ export default class Order extends Component<Props> {
             });
         }
 
-        setTimeout(() => {
-
-            let dataArrayBuffer = [];
-            //判断是否顶部刷新
-            if (refreshing) {
-                // let i = this.state.dataArray.length - 1;
-                // for (i; i >= 0; i--) {
-                //     dataArrayBuffer.push(this.state.dataArray[i])
-                // }
-                let i = CITY_NAMES.length - 1;
-                for (i; i >= 0; i--) {
-                    dataArrayBuffer.push(CITY_NAMES[i])
-                }
-            } else {//底部加载push
-                if (this.state.dataArray.length > 10) {
-                    dataArrayBuffer = this.state.dataArray;
-                } else {
-                    dataArrayBuffer = this.state.dataArray.concat(CITY_NAMES);
-                }
-
+        let page = 0;
+        let size = this.size;
+        if (!refreshing) {//底部加载push
+            page = this.page + 1;
+            //判断是否是最后一页
+            if (page >= this.totalPages) {
+                this.setState({
+                    con: false
+                })
+                return;
             }
+        }
+        this.loadFetch(page, size, refreshing);
 
-            //关闭load并渲染数据
-            this.setState({
-                isLoading: false,
-                dataArray: dataArrayBuffer
-            })
-        }, 2000)
     }
 
     //底部标签显示
     genIndicator() {
-        if (this.state.dataArray.length > 10) {
+        if (!this.state.con) {
             return (<View style={styles.indicatorContainer}>
                 <Text style={styles.indicatorText}>已无更多数据</Text>
             </View>)
@@ -189,8 +221,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     itemImgae: {
-        width: 90, 
-        height: 90, 
+        width: 90,
+        height: 90,
         marginRight: 10
     }
 });

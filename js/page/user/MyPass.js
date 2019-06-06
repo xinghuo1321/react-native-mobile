@@ -9,7 +9,7 @@ export default class MyPass extends Component {
                 <Text style={styles.welcome}>{this.props.title || '登陆密码（8-20位数字+字母）'}</Text>
                 <View style={styles.phoneMsg}>
                     <View style={styles.msgInput}>
-                        <TextInput style={styles.passInput} secureTextEntry={this.props.secureTextEntry} placeholder={this.props.placehold || '输入密码'} />
+                        <TextInput style={styles.passInput} secureTextEntry={this.props.secureTextEntry} placeholder={this.props.placehold || '输入密码'} onChangeText={(text) => { this.props.onChangeText(text) }}/>
                     </View>
                     <TouchableOpacity style={styles.msgButton} onPress={this.props.click}>
                         <Image
